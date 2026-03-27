@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h2>माझी कार्ट</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>पिक</th><th>शेतकरी</th><th>किंमत</th><th>प्रमाण</th><th>एकूण</th><th>कृती</th></tr>
+        </thead>
+        <tbody>
+          <% if (!items.length) { %>
+            <tr><td colspan="6">तुमची कार्ट रिकामी आहे.</td></tr>
+          <% } %>
+          <% items.forEach(item => { %>
+            <tr>
+              <td><%= item.name %></td>
+              <td><%= item.farmer_name %></td>
+              <td>₹<%= item.price %>/<%= item.unit %></td>
+              <td>
+                <form method="POST" action="/cart/update/<%= item.id %>" class="inline-form">
+                  <input type="number" name="quantity" min="1" max="<%= item.stock %>" value="<%= item.cart_qty %>" style="width:90px;" data-price="<%= item.price %>" data-item-id="<%= item.id %>" />
+                  <button class="small-btn">अपडेट</button>
+                </form>
+              </td>
+              <td id="item-total-<%= item.id %>">₹<%= Number(item.price) * Number(item.cart_qty) %></td>
+              <td>
+                <form method="POST" action="/cart/remove/<%= item.id %>">
+                  <button class="small-btn" style="background:#b42318;">हटवा</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-card" style="max-width:900px; margin-top:24px;">
+      <h3>Checkout</h3>
+      <p><strong>एकूण रक्कम:</strong> <span id="overall-total">₹<%= total %></span></p>
+      <form method="POST" action="/payment-confirmation">
+        <div class="form-grid">
+          <div>
+            <label>पेमेंट पद्धत</label>
+            <select name="payment_method" required>
+              <option value="UPI">UPI</option>
+              <option value="Card">डेबिट / क्रेडिट कार्ड</option>
+              <option value="Net Banking">नेट बँकिंग</option>
+              <option value="COD">Cash on Delivery</option>
+            </select>
+          </div>
+          <div>
+            <label>डिलिव्हरी प्रकार</label>
+            <select name="delivery_type" required>
+              <option value="Home Delivery">घरपोच डिलिव्हरी</option>
+              <option value="Pickup">केंद्रातून पिकअप</option>
+            </select>
+          </div>
+        </div>
+        <label>डिलिव्हरी पत्ता</label>
+        <textarea name="delivery_address" required></textarea>
+        <button type="submit">पेमेंट कन्फर्म करा</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const quantityInputs = document.querySelectorAll('input[name="quantity"]');
+  
+  function updateTotals() {
+    let overallTotal = 0;
+    quantityInputs.forEach(input => {
+      const price = parseFloat(input.dataset.price);
+      const quantity = parseInt(input.value) || 0;
+      const itemTotal = price * quantity;
+      const itemId = input.dataset.itemId;
+      document.getElementById('item-total-' + itemId).textContent = '₹' + itemTotal.toFixed(2);
+      overallTotal += itemTotal;
+    });
+    document.getElementById('overall-total').textContent = '₹' + overallTotal.toFixed(2);
+  }
+  
+  quantityInputs.forEach(input => {
+    input.addEventListener('input', updateTotals);
+  });
+  
+  // Initial calculation in case of pre-filled values
+  updateTotals();
+});
+</script>
+
+<%- include('partials/footer') %>

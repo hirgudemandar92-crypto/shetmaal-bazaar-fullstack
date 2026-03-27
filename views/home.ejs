@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">ताजे पिक • योग्य भाव • सुरक्षित व्यवहार</span>
+      <h1>शेतकरी आणि खरेदीदारांसाठी संपूर्ण ऑनलाइन प्लॅटफॉर्म</h1>
+      <p>पिकांची नोंदणी, फोटो/व्हिडिओ अपलोड, बाजारभाव, कार्ट, ऑर्डर, पेमेंट आणि डिलिव्हरी — सर्व काही एकाच Marathi full stack वेबसाइटमध्ये.</p>
+      <div class="hero-actions">
+        <a class="btn" href="/register">आत्ता नोंदणी करा</a>
+        <a class="btn secondary" href="/crops">पिके पहा</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>डेमो लॉगिन</h3>
+      <p><strong>शेतकरी:</strong> farmer@example.com / farmer123</p>
+      <p><strong>खरेदीदार:</strong> buyer@example.com / buyer123</p>
+      <p>तुम्ही नवीन खाते देखील तयार करू शकता.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>मुख्य वैशिष्ट्ये</h2>
+    <div class="grid-3">
+      <div class="feature-item"><h3>🔐 नोंदणी व लॉगिन</h3><p>मोबाईल नंबर किंवा ईमेलने लॉगिन आणि सुरक्षित पासवर्ड प्रणाली.</p></div>
+      <div class="feature-item"><h3>👨‍🌾 शेतकरी डॅशबोर्ड</h3><p>पिके add/edit, ऑर्डर, कमाई आणि स्टॉक व्यवस्थापन.</p></div>
+      <div class="feature-item"><h3>🛒 खरेदीदार डॅशबोर्ड</h3><p>पिके शोधा, कार्टमध्ये जोडा, ऑर्डर द्या आणि इतिहास पाहा.</p></div>
+      <div class="feature-item"><h3>📸 कॅमेरा आधारित फोटो</h3><p>फोटो इनपुटमध्ये capture support ठेवले आहे, त्यामुळे mobile camera ने direct फोटो घेता येतो.</p></div>
+      <div class="feature-item"><h3>🎥 व्हिडिओ अपलोड</h3><p>शेतकरी पिकाचा छोटा व्हिडिओ अपलोड करू शकतो.</p></div>
+      <div class="feature-item"><h3>💳 सुरक्षित पेमेंट</h3><p>UPI, कार्ड, नेट बँकिंग आणि COD पर्याय उपलब्ध.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>नवीन पिके</h2>
+    <div class="grid-3">
+      <% featuredCrops.forEach(crop => { %>
+        <div class="card crop-card">
+          <% if (crop.image_path) { %>
+            <img src="<%= crop.image_path %>" alt="<%= crop.name %>" />
+          <% } else { %>
+            <div class="hero-card" style="text-align:center;">🌽 फोटो उपलब्ध नाही</div>
+          <% } %>
+          <div>
+            <h3><%= crop.name %></h3>
+            <div class="crop-meta">
+              <span>किंमत: ₹<%= crop.price %>/<%= crop.unit %></span>
+              <span>स्टॉक: <%= crop.stock %> <%= crop.unit %></span>
+              <span>ठिकाण: <%= crop.location %></span>
+            </div>
+            <p>शेतकरी: <strong><%= crop.farmer_name %></strong></p>
+            <a class="btn" href="/crop/<%= crop.id %>">अधिक माहिती</a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>आजचे बाजारभाव</h2>
+      <a class="btn outline" href="/market-prices">सर्व बाजारभाव पहा</a>
+    </div>
+    <p class="live-indicator" style="margin-bottom: 20px;">🔴 लाईव्ह अपडेट होत आहे - दर 5 मिनिटांनी बदलतात</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>पिक</th><th>भाव</th><th>ठिकाण</th></tr>
+        </thead>
+        <tbody>
+          <% prices.forEach(item => { %>
+            <tr>
+              <td><%= item.crop_name %></td>
+              <td>₹<%= item.price %>/kg</td>
+              <td><%= item.market_location %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Show welcome notification on first visit
+  document.addEventListener('DOMContentLoaded', function() {
+    const hasVisited = localStorage.getItem('shetmaal-visited');
+    if (!hasVisited && window.showWelcomeNotification) {
+      setTimeout(() => {
+        window.showWelcomeNotification();
+      }, 2000); // Show after 2 seconds
+      localStorage.setItem('shetmaal-visited', 'true');
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<div class="form-card">
+  <h2>लॉगिन करा</h2>
+  <form method="POST" action="/login">
+    <label>मोबाईल नंबर / ईमेल</label>
+    <input name="identifier" required />
+    <label>पासवर्ड</label>
+    <input type="password" name="password" required />
+    <button type="submit">लॉगिन</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

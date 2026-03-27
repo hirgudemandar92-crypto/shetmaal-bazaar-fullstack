@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <div class="hero-actions" style="justify-content: space-between; margin-bottom: 20px;">
+      <a class="btn secondary" href="/buyer">← ग्राहक डॅशबोर्ड</a>
+      <button type="button" onclick="window.print()">Print Invoice</button>
+    </div>
+
+    <div class="invoice-card">
+      <div class="invoice-header">
+        <div>
+          <span class="badge">Customer Invoice</span>
+          <h2>इनव्हॉईस <%= invoiceNumber %></h2>
+          <p>ऑर्डर आयडी: #<%= order.id %></p>
+          <p>ऑर्डर तारीख: <%= order.created_at %></p>
+        </div>
+        <div class="invoice-brand">
+          <h3>🌾 शेतमाल बाजार</h3>
+          <p>ग्राहक ऑर्डर इनव्हॉईस</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="invoice-box">
+          <h3>ग्राहक माहिती</h3>
+          <p><strong>नाव:</strong> <%= order.buyer_name %></p>
+          <p><strong>मोबाईल:</strong> <%= order.buyer_mobile || '-' %></p>
+          <p><strong>ईमेल:</strong> <%= order.buyer_email || '-' %></p>
+          <p><strong>पत्ता:</strong> <%= order.delivery_address || order.buyer_address || '-' %></p>
+          <p><strong>ठिकाण:</strong> <%= order.buyer_location || '-' %></p>
+        </div>
+        <div class="invoice-box">
+          <h3>ऑर्डर माहिती</h3>
+          <p><strong>स्थिती:</strong> <%= order.status %></p>
+          <p><strong>पेमेंट:</strong> <%= order.payment_method %></p>
+          <p><strong>डिलिव्हरी:</strong> <%= order.delivery_type %></p>
+          <p><strong>इनव्हॉईस नं.:</strong> <%= invoiceNumber %></p>
+          <p><strong>एकूण रक्कम:</strong> ₹<%= Number(order.total).toFixed(2) %></p>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 22px; box-shadow: none; border: 1px solid #e4ece7;">
+        <table>
+          <thead>
+            <tr>
+              <th>पीक</th>
+              <th>शेतकरी</th>
+              <th>प्रमाण</th>
+              <th>दर</th>
+              <th>एकूण</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(item => { %>
+              <tr>
+                <td><%= item.crop_name %></td>
+                <td>
+                  <div><strong><%= item.farmer_name %></strong></div>
+                  <small><%= item.farmer_mobile || '' %> <%= item.farmer_location ? '(' + item.farmer_location + ')' : '' %></small>
+                </td>
+                <td><%= item.quantity %> <%= item.unit || '' %></td>
+                <td>₹<%= Number(item.price).toFixed(2) %></td>
+                <td>₹<%= (Number(item.quantity) * Number(item.price)).toFixed(2) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="invoice-total-row">
+        <div class="invoice-total-box">
+          <p><strong>Subtotal:</strong> ₹<%= Number(order.total).toFixed(2) %></p>
+          <p><strong>Total Payable:</strong> ₹<%= Number(order.total).toFixed(2) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Show order success notification
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.showOrderNotification) {
+      window.showOrderNotification('<%= invoiceNumber.replace('INV-', '') %>', '<%= Number(order.total).toFixed(2) %>');
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

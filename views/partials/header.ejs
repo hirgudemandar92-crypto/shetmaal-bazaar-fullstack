@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>शेतमाल बाजार</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-wrap">
+      <a href="/" class="brand">🌾 शेतमाल बाजार</a>
+      <div class="nav-links">
+        <a href="/">मुख्यपृष्ठ</a>
+        <a href="/crops">पिके</a>
+        <a href="/market-prices">बाजारभाव</a>
+        <% if (!currentUser) { %>
+          <a href="/register">नोंदणी</a>
+          <a href="/login">लॉगिन</a>
+        <% } else { %>
+          <a href="/dashboard">डॅशबोर्ड</a>
+          <% if (currentUser.role === 'buyer') { %><a href="/cart">कार्ट</a><% } %>
+          <a href="/logout">लॉगआउट</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+  <% if (message) { %>
+    <div class="alert <%= message.type %>"><%= message.text %></div>
+  <% } %>
+
+  <script>
+    // Browser Notifications Setup
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(function(permission) {
+          console.log('Notification permission:', permission);
+        });
+      }
+    }
+
+    function showNotification(title, body, icon = '/favicon.ico') {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification(title, {
+          body: body,
+          icon: icon,
+          badge: icon,
+          tag: 'shetmaal-bazaar',
+          requireInteraction: false
+        });
+
+        // Auto close after 6 seconds
+        setTimeout(() => {
+          notification.close();
+        }, 6000);
+
+        // Click to focus window
+        notification.onclick = function() {
+          window.focus();
+          notification.close();
+        };
+
+        return notification;
+      }
+      return null;
+    }
+
+    // Request permission on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      requestNotificationPermission();
+
+      // Show permission prompt if not granted
+      setTimeout(() => {
+        if ('Notification' in window && Notification.permission === 'default') {
+          showPermissionPrompt();
+        }
+      }, 3000);
+    });
+
+    function showPermissionPrompt() {
+      const prompt = document.createElement('div');
+      prompt.className = 'notification-permission';
+      prompt.innerHTML = `
+        <div>
+          <strong>🔔 सूचना सक्षम करा</strong><br>
+          ऑर्डर अपडेट आणि बाजारभाव बदल्यांबद्दल सूचना मिळवा
+          <button onclick="requestPermission()">सक्षम करा</button>
+          <button onclick="dismissPrompt()">नाही</button>
+        </div>
+      `;
+      document.body.appendChild(prompt);
+
+      window.requestPermission = function() {
+        Notification.requestPermission().then(function(permission) {
+          if (permission === 'granted') {
+            showNotification('✅ सूचना सक्षम!', 'आता आपणांस सर्व अपडेट मिळतील.');
+          }
+          prompt.remove();
+        });
+      };
+
+      window.dismissPrompt = function() {
+        prompt.remove();
+      };
+
+      // Auto remove after 10 seconds
+      setTimeout(() => {
+        if (prompt.parentNode) {
+          prompt.remove();
+        }
+      }, 10000);
+    }
+
+    // Global notification functions
+    window.showOrderNotification = function(orderId, total) {
+      showNotification(
+        '🎉 ऑर्डर यशस्वी!',
+        `आपली ऑर्डर क्र. ${orderId} नोंदवली गेली आहे. एकूण रक्कम: ₹${total}`,
+        '/favicon.ico'
+      );
+    };
+
+    window.showPriceUpdateNotification = function() {
+      showNotification(
+        '📈 बाजारभाव अपडेट!',
+        'बाजारातील नवीन दर उपलब्ध आहेत. तपासून पाहा.',
+        '/favicon.ico'
+      );
+    };
+
+    window.showWelcomeNotification = function() {
+      showNotification(
+        '👋 शेतमाल बाजारमध्ये आपले स्वागत!',
+        'ताज्या भाज्या आणि फळांचे ऑनलाइन बाजार.',
+        '/favicon.ico'
+      );
+    };
+  </script>

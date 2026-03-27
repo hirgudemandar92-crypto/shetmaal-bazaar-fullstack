@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h2>लाईव्ह बाजारभाव</h2>
+    <p class="live-indicator">🔴 लाईव्ह अपडेट होत आहे - दर 5 मिनिटांनी बदलतात</p>
+    <button onclick="location.reload()" class="refresh-btn">🔄 रिफ्रेश करा</button>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>पिक</th><th>बाजारभाव</th><th>ठिकाण</th><th>अपडेट</th></tr>
+        </thead>
+        <tbody>
+          <% prices.forEach(item => { %>
+            <tr>
+              <td><%= item.crop_name %></td>
+              <td>₹<%= item.price %>/kg</td>
+              <td><%= item.market_location %></td>
+              <td><%= item.updated_at %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+// Auto refresh every 5 minutes (300000 ms)
+setTimeout(() => {
+  location.reload();
+}, 300000);
+
+// Check for price updates every 30 seconds
+let lastPrices = {};
+function checkPriceUpdates() {
+  fetch('/api/market-prices')
+    .then(response => response.json())
+    .then(data => {
+      let hasChanged = false;
+      data.forEach(price => {
+        const key = price.crop_name;
+        if (lastPrices[key] && lastPrices[key] !== price.price) {
+          hasChanged = true;
+        }
+        lastPrices[key] = price.price;
+      });
+
+      if (hasChanged && Object.keys(lastPrices).length > 0) {
+        if (window.showPriceUpdateNotification) {
+          window.showPriceUpdateNotification();
+        }
+      }
+    })
+    .catch(error => console.log('Price check failed:', error));
+}
+
+// Start checking after 10 seconds
+setTimeout(() => {
+  checkPriceUpdates();
+  setInterval(checkPriceUpdates, 30000); // Check every 30 seconds
+}, 10000);
+</script>
+
+<%- include('partials/footer') %>

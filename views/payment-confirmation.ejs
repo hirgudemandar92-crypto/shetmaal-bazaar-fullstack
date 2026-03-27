@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h2>पेमेंट कन्फर्मेशन</h2>
+    
+    <div class="form-card" style="max-width:900px;">
+      <h3>ऑर्डर सारांश</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>पिक</th><th>शेतकरी</th><th>किंमत</th><th>प्रमाण</th><th>एकूण</th></tr>
+          </thead>
+          <tbody>
+            <% let grandTotal = 0; %>
+            <% items.forEach(item => { %>
+              <% const itemTotal = Number(item.quantity) * Number(item.price); %>
+              <% grandTotal += itemTotal; %>
+              <tr>
+                <td><%= item.crop_name %></td>
+                <td><%= item.farmer_name %></td>
+                <td>₹<%= item.price %>/<%= item.unit %></td>
+                <td><%= item.quantity %> <%= item.unit %></td>
+                <td>₹<%= itemTotal.toFixed(2) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 8px;">
+        <h3>एकूण रक्कम: <strong>₹<%= grandTotal.toFixed(2) %></strong></h3>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <h3>पेमेंट पद्धत: <%= paymentMethod %></h3>
+        
+        <% if (paymentMethod === 'UPI' && qrCodes.length > 0) { %>
+          <div style="margin-top: 20px; padding: 20px; background: #fffbf0; border: 2px solid #ff9800; border-radius: 8px;">
+            <h4 style="color: #ff9800; margin-bottom: 15px;">📱 UPI QR कोड स्कॅन करा आणि पेमेंट करा</h4>
+            
+            <div style="display: grid; gap: 30px;">
+              <% qrCodes.forEach((qr, index) => { %>
+                <div style="text-align: center; padding: 20px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                  <h5 style="margin-bottom: 15px;"><%= qr.farmer_name %></h5>
+                  <p style="margin-bottom: 10px; color: #666;">रक्कम: <strong>₹<%= qr.amount.toFixed(2) %></strong></p>
+                  <img src="<%= qr.qr_code_path %>" alt="UPI QR Code for <%= qr.farmer_name %>" 
+                       style="max-width: 250px; border: 2px solid #4CAF50; border-radius: 8px; padding: 10px;" />
+                  <p style="margin-top: 10px; font-size: 12px; color: #999;">QR कोड स्कॅन करून पेमेंट पूर्ण करा</p>
+                </div>
+              <% }) %>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 4px;">
+              <p style="margin: 0; color: #2e7d32; font-weight: 500;">
+                ✓ सर्व शेतकऱ्यांचे QR कोड वरील दर्शविले आहेत. प्रत्येकी साठी वैयक्तिकरित्या पेमेंट करा किंवा एकूण रक्कम द्या.
+              </p>
+            </div>
+          </div>
+        <% } else if (paymentMethod === 'UPI') { %>
+          <div style="margin-top: 20px; padding: 15px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px;">
+            <p style="margin: 0; color: #e65100;">
+              ⚠️ या ऑर्डरमधील शेतकऱ्यांनी अभी QR कोड अपलोड केलेले नाहीत. कृपया इतर पेमेंट पद्धत निवडा.
+            </p>
+          </div>
+        <% } %>
+      </div>
+
+      <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+        <h4>डिलिव्हरी तपशीले</h4>
+        <p><strong>डिलिव्हरी प्रकार:</strong> <%= deliveryType %></p>
+        <% if (deliveryAddress) { %>
+          <p><strong>पत्ता:</strong> <%= deliveryAddress %></p>
+        <% } %>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 10px;">
+        <form method="POST" action="/checkout" style="flex: 1;">
+          <input type="hidden" name="payment_method" value="<%= paymentMethod %>">
+          <input type="hidden" name="delivery_type" value="<%= deliveryType %>">
+          <input type="hidden" name="delivery_address" value="<%= deliveryAddress %>">
+          <button type="submit" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            पेमेंट पूर्ण झाल्यानंतर कन्फर्म करा
+          </button>
+        </form>
+        <a href="/cart" style="padding: 12px 30px; background: #757575; color: white; border-radius: 4px; text-decoration: none; display: flex; align-items: center; font-weight: bold;">
+          मागे जा
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

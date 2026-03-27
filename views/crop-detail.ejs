@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container grid-2">
+    <div class="card crop-card">
+      <% if (crop.image_path) { %>
+        <img src="<%= crop.image_path %>" alt="<%= crop.name %>" />
+      <% } else { %>
+        <div class="hero-card" style="text-align:center;">🌽 फोटो उपलब्ध नाही</div>
+      <% } %>
+      <% if (crop.video_path) { %>
+        <video src="<%= crop.video_path %>" controls></video>
+      <% } %>
+    </div>
+    <div class="card">
+      <h2><%= crop.name %></h2>
+      <p><%= crop.description || 'गुणवत्तापूर्ण पीक उपलब्ध आहे.' %></p>
+      <p><strong>किंमत:</strong> ₹<%= crop.price %> / <%= crop.unit %></p>
+      <p><strong>उपलब्ध प्रमाण:</strong> <%= crop.stock %> <%= crop.unit %></p>
+      <p><strong>गुणवत्ता:</strong> <%= crop.quality || 'माहिती नाही' %></p>
+      <p><strong>ठिकाण:</strong> <%= crop.location %></p>
+      <p><strong>शेतकरी:</strong> <%= crop.farmer_name %></p>
+      <p><strong>संपर्क:</strong> <%= crop.farmer_mobile || 'उपलब्ध नाही' %></p>
+      <% if (currentUser && currentUser.role === 'buyer') { %>
+        <form method="POST" action="/cart/add/<%= crop.id %>">
+          <button type="submit">कार्टमध्ये जोडा</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+
+
+<%- include('partials/footer') %>

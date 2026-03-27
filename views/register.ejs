@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<div class="form-card">
+  <h2>नोंदणी करा</h2>
+  <form method="POST" action="/register">
+    <div class="form-grid">
+      <div>
+        <label>पूर्ण नाव</label>
+        <input name="name" required />
+      </div>
+      <div>
+        <label>ईमेल</label>
+        <input type="email" name="email" />
+      </div>
+      <div>
+        <label>मोबाईल नंबर</label>
+        <input name="mobile" />
+      </div>
+      <div>
+        <label>पासवर्ड</label>
+        <input type="password" name="password" required />
+      </div>
+      <div>
+        <label>वापरकर्ता प्रकार</label>
+        <select name="role" required>
+          <option value="farmer">शेतकरी</option>
+          <option value="buyer">खरेदीदार</option>
+        </select>
+      </div>
+      <div>
+        <label>ठिकाण</label>
+        <input name="location" />
+      </div>
+    </div>
+    <label>पत्ता</label>
+    <textarea name="address"></textarea>
+    <button type="submit">नोंदणी पूर्ण करा</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

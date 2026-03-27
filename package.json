@@ -1,0 +1,20 @@
+{
+  "name": "shetmaal-bazaar-fullstack",
+  "version": "1.0.0",
+  "description": "Marathi crop marketplace website with frontend, backend and SQLite database",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "multer": "^1.4.5-lts.1",
+    "twilio": "^4.19.0"
+  }
+}

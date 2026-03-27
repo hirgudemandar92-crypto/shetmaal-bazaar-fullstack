@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+<div class="form-card">
+  <h2><%= crop ? 'पीक माहिती अपडेट करा' : 'नवीन पीक जोडा' %></h2>
+  <form method="POST" enctype="multipart/form-data" action="<%= crop ? '/farmer/crops/edit/' + crop.id : '/farmer/crops/new' %>">
+    <% if (crop && (crop.image_path || crop.video_path || crop.qr_code_path)) { %>
+      <div class="existing-media" style="margin-bottom:20px;">
+        <h3>सध्याचा मीडिया आणि QR कोड</h3>
+        <% if (crop.image_path) { %>
+          <div>
+            <label>सध्याचा फोटो</label>
+            <img src="<%= crop.image_path %>" alt="crop image" style="max-width:220px; display:block; margin:10px 0;" />
+          </div>
+        <% } %>
+        <% if (crop.video_path) { %>
+          <div>
+            <label>सध्याचा व्हिडिओ</label>
+            <video src="<%= crop.video_path %>" controls style="max-width:320px; display:block; margin:10px 0;"></video>
+          </div>
+        <% } %>
+        <% if (crop.qr_code_path) { %>
+          <div>
+            <label>सध्याचा Payment QR कोड</label>
+            <img src="<%= crop.qr_code_path %>" alt="payment qr code" style="max-width:150px; display:block; margin:10px 0;" />
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+    <div class="form-grid">
+      <div>
+        <label>पिकाचे नाव</label>
+        <input name="name" required value="<%= crop ? crop.name : '' %>" />
+      </div>
+      <div>
+        <label>प्रकार</label>
+        <input name="category" required value="<%= crop ? crop.category : '' %>" placeholder="भाज्या / धान्य / फळे" />
+      </div>
+      <div>
+        <label>प्रमाण</label>
+        <input type="number" step="0.01" name="quantity" required value="<%= crop ? crop.quantity : '' %>" />
+      </div>
+      <div>
+        <label>युनिट</label>
+        <input name="unit" value="<%= crop ? crop.unit : 'किलो' %>" />
+      </div>
+      <div>
+        <label>किंमत</label>
+        <input type="number" step="0.01" name="price" required value="<%= crop ? crop.price : '' %>" />
+      </div>
+      <div>
+        <label>गुणवत्ता</label>
+        <input name="quality" value="<%= crop ? crop.quality : '' %>" placeholder="A ग्रेड" />
+      </div>
+      <div>
+        <label>ठिकाण</label>
+        <input name="location" value="<%= crop ? crop.location : '' %>" />
+      </div>
+      <div>
+        <label>लाईव्ह फोटो अपलोड (कॅमेरा)</label>
+        <input type="file" name="image" accept="image/*" capture="environment" data-live-capture="true" />
+      </div>
+    </div>
+    <label>लाईव्ह व्हिडिओ अपलोड (कॅमेरा)</label>
+    <input type="file" name="video" accept="video/*" capture="environment" data-live-capture="true" />
+    
+    <label style="margin-top:20px;">Payment QR कोड अपलोड (UPI साठी)</label>
+    <input type="file" name="qr_code" accept="image/*" />
+    
+    <p class="capture-note">फोटो आणि व्हिडिओ फक्त लाईव्ह कॅमेरा कॅप्चरमधूनच अपलोड करा. QR कोड हा आपल्या UPI पेमेंट साठी वापरला जाईल.</p>
+    <label>वर्णन</label>
+    <textarea name="description"><%= crop ? crop.description : '' %></textarea>
+    <button type="submit"><%= crop ? 'अपडेट करा' : 'पीक जोडा' %></button>
+  </form>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h2>शेतकरी डॅशबोर्ड</h2>
+    <div class="kpi">
+      <div class="card"><h3>एकूण पिके</h3><strong><%= crops.length %></strong></div>
+      <div class="card"><h3>एकूण ऑर्डर्स</h3><strong><%= orders.length %></strong></div>
+      <div class="card"><h3>एकूण कमाई</h3><strong>₹<%= Number(earnings).toFixed(2) %></strong></div>
+    </div>
+    <div class="hero-actions" style="margin-bottom:20px;">
+      <a class="btn" href="/farmer/crops/new">नवीन पीक जोडा</a>
+    </div>
+
+    <h3>माझी पिके</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>पिक</th><th>प्रकार</th><th>किंमत</th><th>स्टॉक</th><th>ठिकाण</th><th>कृती</th></tr>
+        </thead>
+        <tbody>
+          <% crops.forEach(crop => { %>
+            <tr>
+              <td><%= crop.name %></td>
+              <td><%= crop.category %></td>
+              <td>₹<%= crop.price %>/<%= crop.unit %></td>
+              <td><%= crop.stock %> <%= crop.unit %></td>
+              <td><%= crop.location %></td>
+              <td>
+                <a class="btn small-btn" href="/farmer/crops/edit/<%= crop.id %>">Edit</a>
+                <form method="POST" action="/farmer/crops/delete/<%= crop.id %>" style="display:inline;" data-confirm="हे पीक हटवायचे आहे का?">
+                  <button class="small-btn" style="background:#b42318;">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:30px;">मिळालेल्या ऑर्डर्स</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ऑर्डर आयडी</th><th>पीक</th><th>प्रमाण</th><th>किंमत</th><th>पेमेंट</th><th>स्थिती</th><th>तारीख</th><th>कृती</th></tr>
+        </thead>
+        <tbody>
+          <% if (!orders.length) { %>
+            <tr><td colspan="8">अजून कोणतीही ऑर्डर नाही.</td></tr>
+          <% } %>
+          <% let lastOrderId = null; %>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td>#<%= order.id %></td>
+              <td><%= order.crop_name %></td>
+              <td><%= order.quantity %></td>
+              <td>₹<%= order.price %></td>
+              <td><%= order.payment_method %></td>
+              <td><%= order.status %></td>
+              <td><%= order.created_at %></td>
+              <td>
+                <% if (lastOrderId !== order.id) { %>
+                  <form method="POST" action="/farmer/order/<%= order.id %>/status" style="display:inline;">
+                    <select name="status" required>
+                      <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                      <option value="preparing" <%= order.status === 'preparing' ? 'selected' : '' %>>Preparing</option>
+                      <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                      <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                      <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                    <button class="small-btn">अपडेट</button>
+                  </form>
+                <% } %>
+                <% lastOrderId = order.id; %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

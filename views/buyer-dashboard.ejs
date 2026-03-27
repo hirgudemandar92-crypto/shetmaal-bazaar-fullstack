@@ -1,0 +1,65 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h2>खरेदीदार डॅशबोर्ड</h2>
+    <div class="kpi">
+      <div class="card"><h3>कार्ट आयटम</h3><strong><%= cartCount %></strong></div>
+      <div class="card"><h3>एकूण ऑर्डर्स</h3><strong><%= orderItems.length %></strong></div>
+      <div class="card"><h3>स्थिती</h3><strong>सक्रिय</strong></div>
+    </div>
+    <div class="hero-actions" style="margin-bottom:20px;">
+      <a class="btn" href="/crops">पिके ब्राउज करा</a>
+      <a class="btn secondary" href="/cart">माझी कार्ट</a>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ऑर्डर आयडी</th><th>पिक</th><th>शेतकरी</th><th>प्रमाण</th><th>दर</th><th>एकूण</th><th>तारीख</th><th>रिव्ह्यू</th></tr>
+        </thead>
+        <tbody>
+          <% if (!orderItems.length) { %>
+            <tr><td colspan="8">अजून कोणतीही ऑर्डर नाही.</td></tr>
+          <% } %>
+          <% orderItems.forEach(item => { %>
+            <tr>
+              <td>#<%= item.order_id %></td>
+              <td>
+                <div><strong><%= item.crop_name %></strong></div>
+                <small>ऑर्डर #<%= item.order_id %></small>
+              </td>
+              <td><%= item.farmer_name %></td>
+              <td><%= item.quantity %> <%= item.unit %></td>
+              <td>₹<%= item.price %></td>
+              <td>₹<%= (item.quantity * item.price).toFixed(2) %></td>
+              <td><%= item.created_at %></td>
+              <td>
+                <% if (item.review_id) { %>
+                  <div>रेटिंग: <strong><%= item.review_rating %></strong>/5</div>
+                  <div><small><%= item.review_comment %></small></div>
+                <% } else if (item.status === 'delivered') { %>
+                  <form method="POST" action="/buyer/order/<%= item.order_id %>/review" style="display:grid; gap:4px;">
+                    <input type="hidden" name="crop_id" value="<%= item.crop_id %>" />
+                    <select name="rating" required>
+                      <option value="">रेटिंग</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                    <input type="text" name="comment" placeholder="टिप्पणी (ऐच्छिक)" />
+                    <button type="submit" class="small-btn">सबमिट</button>
+                  </form>
+                <% } else { %>
+                  <span>डिलिव्हरी न झाल्यामुळे उपलब्ध नाही</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>
