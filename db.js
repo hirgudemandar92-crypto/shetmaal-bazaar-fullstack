@@ -1,10 +1,15 @@
 const path = require('path');
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 
 const dbPath = path.join(__dirname, 'database', 'shetmaal.db');
-const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Database connection error:', err.message);
+  } else {
+    console.log('Connected to SQLite database');
+  }
+});
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
